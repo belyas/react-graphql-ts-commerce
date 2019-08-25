@@ -1,38 +1,19 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import PropTypes from 'prop-types';
+import React from 'react';
+import { Query } from 'react-apollo';
 
-import { getProducts } from '../../store/actions';
+import { GET_PRODUCTS } from '../../gql/queries';
 import HomeComponent from '../../components/Home/Home';
 
-const Home = ({ products, getProducts, loading }) => {
-    useEffect(() => {
-        if (!products.length) {
-            getProducts();
-        }
-        // eslint-disable-next-line
-    }, [products]);
+const Home = () => (
+    <Query query={GET_PRODUCTS}>
+        {({ data: { products }, loading, error }) => {
+            if (error) {
+                throw new Error(error);
+            }
 
-    const props = { loading, products };
-    return <HomeComponent {...props} />;
-};
+            return <HomeComponent loading={loading} products={products} />;
+        }}
+    </Query>
+);
 
-Home.propTypes = {
-    loading: PropTypes.bool.isRequired,
-    products: PropTypes.array.isRequired,
-    getProducts: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = state => ({
-    loading: state.product.loading,
-    products: state.product.products,
-});
-
-const mapDispatchToProps = dispatch =>
-    bindActionCreators({ getProducts }, dispatch);
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Home);
+export default Home;
