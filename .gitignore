@@ -1,0 +1,9 @@
+node_modules
+/**/node_modules
+.git
+.DS_Store
+**/.env
+**/tests
+server/public/images
+coverage
+**/__tests__
