@@ -13,21 +13,6 @@ import connectMongodbSession from 'connect-mongodb-session';
 import cors from 'cors';
 import helmet from 'helmet';
 import { ApolloServer, gql } from 'apollo-server-express';
-
-const app = express();
-
-const typeDefs = gql(
-    fs.readFileSync(path.resolve(__dirname, 'gql', 'schema.gql'), {
-        encoding: 'utf-8',
-    })
-);
-const resolvers = require('./gql/resolvers');
-const apolloServer = new ApolloServer({
-    typeDefs,
-    resolvers,
-});
-apolloServer.applyMiddleware({ app });
-
 // Middlewares
 import {
     LocalsMiddleware,
@@ -60,6 +45,18 @@ const store = new MongoDbStore({
 
 const csrfProtection = csrf();
 const port = process.env.PORT || 8000;
+const app = express();
+const typeDefs = gql(
+    fs.readFileSync(path.resolve(__dirname, 'gql', 'schema.gql'), {
+        encoding: 'utf-8',
+    })
+);
+const resolvers = require('./gql/resolvers');
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+});
+apolloServer.applyMiddleware({ app });
 
 app.use(
     cors(),
@@ -87,9 +84,7 @@ app.use(
         store,
     })
 );
-app.use(csrfProtection);
-app.use(flash());
-app.use(LocalsMiddleware);
+app.use(csrfProtection, flash(), LocalsMiddleware);
 
 // WEB
 app.use(HomeRoute);
