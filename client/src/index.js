@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
+import { ApolloProvider } from 'react-apollo';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'font-awesome/css/font-awesome.min.css';
@@ -10,16 +11,21 @@ import 'font-awesome/css/font-awesome.min.css';
 import { store, persistor } from './store/index';
 import './index.css';
 import App from './App';
+
+import client from './gql/client';
+
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
-    <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-            <Router>
-                <App />
-            </Router>
-        </PersistGate>
-    </Provider>,
+    <ApolloProvider client={client}>
+        <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+                <Router>
+                    <App />
+                </Router>
+            </PersistGate>
+        </Provider>
+    </ApolloProvider>,
     document.getElementById('root')
 );
 
