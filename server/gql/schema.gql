@@ -1,11 +1,24 @@
 type Query {
     categories: [Category]
+    products: [Product]
 }
 
 type Category {
-    _id: ID
-    name: String
+    _id: ID!
+    name: String!
     image: String
+    updatedAt: String
+    createdAt: String
+}
+
+type Product {
+    _id: ID!
+    name: String!
+    description: String
+    image: String
+    quantity: Int
+    price: Int
+    category: ID
     updatedAt: String
     createdAt: String
 }
