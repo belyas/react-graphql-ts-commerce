@@ -1,3 +1,11 @@
 type Query {
-    greeting: String
+    categories: [Category]
+}
+
+type Category {
+    _id: ID
+    name: String
+    image: String
+    updatedAt: String
+    createdAt: String
 }
