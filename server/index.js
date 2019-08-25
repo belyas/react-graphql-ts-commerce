@@ -66,7 +66,6 @@ app.use(
 );
 
 // API
-app.use('/api/categories', categoryRouterApi);
 app.use('/api/auth', authRouterApi);
 app.use('/api/products', productRouterApi);
 app.use(methodOverride('_method'));
