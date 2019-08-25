@@ -11,3 +11,17 @@ export const GET_CATEGORIES = gql`
         }
     }
 `;
+
+export const GET_PRODUCTS = gql`
+    query ProductsQuery {
+        products {
+            _id
+            name
+            image
+            category
+            price
+            description
+            quantity
+        }
+    }
+`;
