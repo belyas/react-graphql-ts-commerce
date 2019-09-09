@@ -3,6 +3,7 @@ type Query {
     products: [Product]
 }
 
+"Category object"
 type Category {
     _id: ID!
     name: String!
@@ -11,6 +12,7 @@ type Category {
     createdAt: String
 }
 
+"Product object"
 type Product {
     _id: ID!
     name: String!
@@ -18,6 +20,9 @@ type Product {
     image: String
     quantity: Int
     price: Int
+    """
+    Category ID
+    """
     category: ID
     updatedAt: String
     createdAt: String
