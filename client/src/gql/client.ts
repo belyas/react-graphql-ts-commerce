@@ -6,12 +6,12 @@ const BASE_URL = 'http://localhost:8000/graphql';
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-    uri: BASE_URL,
-    // headers: {}
+  uri: BASE_URL,
+  // headers: {}
 });
 const client = new ApolloClient({
-    link: httpLink,
-    cache,
+  link: httpLink,
+  cache,
 });
 
 export default client;
