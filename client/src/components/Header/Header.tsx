@@ -1,10 +1,15 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
 
 import CartMenu from '../../containers/Cart/CartMenu/CartMenu';
-import { IHeaderProps } from '../../types';
+import { IAuthReducerInitialState } from '../../store/reducers/auth';
 
-const Header: React.FC<IHeaderProps> = ({ isAuthenticated }: IHeaderProps) => {
+interface HeaderProps {
+  isAuthenticated?: boolean;
+}
+
+const Header = ({ isAuthenticated }: HeaderProps) => {
   return (
     <header>
       <div className="navbar navbar-expand-md navbar-dark bg-dark">
@@ -36,4 +41,8 @@ const Header: React.FC<IHeaderProps> = ({ isAuthenticated }: IHeaderProps) => {
   );
 };
 
-export default Header;
+const mapStateToProps = ({ auth }: { auth: IAuthReducerInitialState }) => ({
+  isAuthenticated: auth.isAuthenicated,
+});
+
+export default connect(mapStateToProps)(Header);

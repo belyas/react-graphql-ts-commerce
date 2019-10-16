@@ -7,12 +7,11 @@ import {
   RouteComponentProps,
 } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
 
 import ErrorBoundary from './hoc/ErrorBoundary/ErrorBoundary';
 import Header from './containers/Header/Header';
 import Menu from './containers/Menu/Menu';
-import { authCheckState } from './store/actions';
+import { IAuthReducerInitialState } from './store/reducers/auth';
 
 const Logout = lazy(() => import('./containers/Auth/Logout'));
 const Auth = lazy(() => import('./containers/Auth/Auth'));
@@ -25,12 +24,14 @@ const ProductDetail = lazy(() =>
 );
 const Cart = lazy(() => import('./containers/Cart/Cart'));
 
-interface IProps extends RouteComponentProps<any> {}
+interface IProps extends RouteComponentProps<any> {
+  isAuthenticated?: boolean;
+}
 
 class App extends Component<IProps> {
-  //   componentDidMount() {
-  //     // this.props.authCheckState();
-  //   }
+  componentDidMount() {
+    // this.props.authCheckState();
+  }
 
   render() {
     return (
@@ -48,10 +49,9 @@ class App extends Component<IProps> {
               <Route path="/product/:product_id" component={ProductDetail} />
               <Route
                 path="/login"
-                render={() => (
-                  //   this.props.isAuthenticated ? <Redirect to="/" /> : <Auth />
-                  <Redirect to="/" />
-                )}
+                render={() =>
+                  this.props.isAuthenticated ? <Redirect to="/" /> : <Auth />
+                }
               />
               <Route path="/logout" component={Logout} />
               <Route path="/cart" component={Cart} />
@@ -63,18 +63,8 @@ class App extends Component<IProps> {
   }
 }
 
-const mapStateToProps = () => {
-  return {
-    isAuthenticated: false,
-  };
-};
+const mapStateToProps = ({ auth }: { auth: IAuthReducerInitialState }) => ({
+  isAuthenticated: auth.isAuthenicated,
+});
 
-const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ authCheckState }, dispatch);
-
-export default withRouter(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )(App)
-);
+export default withRouter(connect(mapStateToProps)(App));
