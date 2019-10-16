@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators, Dispatch } from 'redux';
 import { Redirect } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import { authLoggedout } from '../../store/actions';
 
@@ -15,10 +14,6 @@ const Logout = ({ authLoggedout }: IProps) => {
   }, []);
 
   return <Redirect to="/" />;
-};
-
-Logout.propTypes = {
-  authLoggedout: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = (dispatch: Dispatch) =>

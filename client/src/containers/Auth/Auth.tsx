@@ -1,22 +1,27 @@
 import React, { Component } from 'react';
+import { withRouter, RouteComponentProps } from 'react-router';
 import { connect } from 'react-redux';
-import { Action } from 'redux';
-import { ThunkDispatch } from 'redux-thunk';
+import { bindActionCreators, Dispatch } from 'redux';
 
 import {
   validateLoginAuth,
   validateSignupAuth,
 } from '../../utils/validateAuth';
-import { auth, signupAuthRequest } from '../../store/actions';
 import AuthComponent from '../../components/Auth/Auth';
-import {
-  IAuthState,
-  IAuthErrors,
-  IAuthProps,
-  IAuthReducerInitialState,
-} from '../../types';
+import { IAuthCommon, IAuthErrors } from '../../types';
+import { AUTH_LOGIN } from '../../gql/queries';
+import gqlClient from '../../gql/client';
+import { authSuccess, IAuthSuccessPayload } from '../../store/actions';
 
-type ThunkDispatcher = ThunkDispatch<{}, undefined, Action>;
+interface IAuthProps extends RouteComponentProps {
+  error?: string | undefined;
+  authSuccess(token: string, userId: string | null): IAuthSuccessPayload;
+}
+
+interface IAuthState extends IAuthCommon {
+  firstname: string;
+  lastname: string;
+}
 
 class Auth extends Component<IAuthProps, IAuthState> {
   errrosObj: IAuthErrors = {
@@ -45,9 +50,31 @@ class Auth extends Component<IAuthProps, IAuthState> {
     });
   };
 
-  onLoginSubmitHanlder = (event: React.FormEvent<HTMLFormElement>) => {
+  onLoginSubmitHanlder = async (event: React.FormEvent<HTMLFormElement>) => {
+    const { email, password } = this.state;
+
     event.preventDefault();
-    this.props.onAuth(this.state.email, this.state.password);
+    const { data } = await gqlClient.mutate({
+      mutation: AUTH_LOGIN,
+      variables: {
+        email,
+        password,
+      },
+    });
+    const {
+      authLogin: { token, userId, error },
+    } = data;
+
+    if (token && userId && error === null) {
+      localStorage.setItem('user:token', token);
+      localStorage.setItem('user:userId', userId);
+
+      this.props.authSuccess(token, userId);
+
+      this.props.history.push('/');
+    } else {
+      this.setState({ error });
+    }
   };
 
   onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +113,7 @@ class Auth extends Component<IAuthProps, IAuthState> {
       });
     } else {
       // Sign up call
-      this.props.onSignupAuth(firstname, lastname, email, password);
+      // this.props.onSignupAuth(firstname, lastname, email, password);
       this.setState({ error: '' });
     }
   };
@@ -110,20 +137,12 @@ class Auth extends Component<IAuthProps, IAuthState> {
   }
 }
 
-const mapStateToProps = (state: { auth: IAuthReducerInitialState }) => {
-  return {
-    loading: state.auth.loading,
-    error: state.auth.error,
-    token: state.auth.token,
-    signupSuccess: state.auth.signupSuccess,
-  };
-};
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators({ authSuccess }, dispatch);
 
-const mapDispatchToProps = (dispatch: ThunkDispatcher) => {
-  return {
-    onAuth: (email: string, password: string) => {},
-    onSignupAuth: () => {},
-  };
-};
-
-export default connect(mapStateToProps)(Auth);
+export default withRouter(
+  connect(
+    null,
+    mapDispatchToProps
+  )(Auth)
+);

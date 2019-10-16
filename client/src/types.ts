@@ -39,7 +39,7 @@ export interface IAuthCommon extends IAuthCommonHandlers {
   errors: IAuthErrors;
   email: string;
   password: string;
-  error: string;
+  error?: string;
 }
 
 export interface IAuthState extends IAuthCommon {
@@ -55,19 +55,11 @@ export interface IAuthProps {
     email: string,
     password: string
   ) => void;
-  error: string;
+  error?: string;
 }
 
 export interface IAuth extends IAuthLoginForm, IAuthSignupForm {
   toggleLoginHandler: () => void;
-  signupSuccess?: boolean;
-}
-
-export interface IAuthReducerInitialState {
-  token: string;
-  userId?: string;
-  error: string;
-  loading?: boolean;
   signupSuccess?: boolean;
 }
 
@@ -123,10 +115,6 @@ export interface IProductCardProps {
 
 export interface IProductDetailProps extends IProductCardProps {
   loading: boolean;
-}
-
-export interface IHeaderProps {
-  isAuthenticated: boolean;
 }
 
 // Category
