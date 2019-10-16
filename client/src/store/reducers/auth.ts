@@ -1,8 +1,7 @@
 import * as actionTypes from '../actions/actionTypes';
 import { updateObject } from '../../utils/helpers';
-import { IAuthReducerInitialState } from '../../types';
 
-interface AuthAction {
+export interface AuthAction {
   token: string;
   userId: string;
   error: string;
@@ -10,6 +9,16 @@ interface AuthAction {
   signupSuccess: boolean;
   type: string;
   payload: { error: string };
+  isAuthenicated?: boolean;
+}
+
+export interface IAuthReducerInitialState {
+  token: string;
+  userId?: string;
+  error?: string;
+  loading?: boolean;
+  signupSuccess?: boolean;
+  isAuthenicated?: boolean;
 }
 
 export const initialState: IAuthReducerInitialState = {
@@ -18,13 +27,7 @@ export const initialState: IAuthReducerInitialState = {
   error: '',
   loading: false,
   signupSuccess: false,
-};
-
-const authStart = (state: IAuthReducerInitialState) => {
-  return updateObject(state, {
-    error: null,
-    loading: true,
-  });
+  isAuthenicated: false,
 };
 
 const authSuccess = (state: IAuthReducerInitialState, action: AuthAction) => {
@@ -33,13 +36,7 @@ const authSuccess = (state: IAuthReducerInitialState, action: AuthAction) => {
     loading: false,
     token: action.token,
     userId: action.userId,
-  });
-};
-
-const authFail = (state: IAuthReducerInitialState, action: AuthAction) => {
-  return updateObject(state, {
-    loading: false,
-    error: action.error,
+    isAuthenicated: true,
   });
 };
 
@@ -47,6 +44,7 @@ const authLoggedout = (state: IAuthReducerInitialState) => {
   return updateObject(state, {
     token: '',
     userId: '',
+    isAuthenicated: false,
   });
 };
 
@@ -71,12 +69,8 @@ const signupSuccessAuth = (state: IAuthReducerInitialState) => {
 
 const reducer = (state = initialState, action: AuthAction) => {
   switch (action.type) {
-    case actionTypes.AUTH_START:
-      return authStart(state);
     case actionTypes.AUTH_SUCCESS:
       return authSuccess(state, action);
-    case actionTypes.AUTH_FAIL:
-      return authFail(state, action);
     case actionTypes.AUTH_LOGOUT:
       return authLoggedout(state);
     case actionTypes.AUTH_SIGNUP_START:
