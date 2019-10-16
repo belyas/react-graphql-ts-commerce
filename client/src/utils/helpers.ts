@@ -52,6 +52,13 @@ const getCartTotalItems = (items: ICartItem[]) => {
   return items.reduce((acc, item) => (acc += item.qty), 0);
 };
 
+const isLoggedin = (): boolean => {
+  const token = localStorage.getItem('user:token');
+  const userId = localStorage.getItem('user:userId');
+
+  return token !== null && userId !== null;
+};
+
 export {
   concatClasses,
   updateObject,
@@ -59,4 +66,5 @@ export {
   getCartTotalPrice,
   getCartTotalItems,
   removeItemFromCart,
+  isLoggedin,
 };
