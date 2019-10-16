@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@types/enzyme": "^3.10.3",
+    "@types/enzyme-adapter-react-16": "^1.0.5"
+  }
+}
