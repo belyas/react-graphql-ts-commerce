@@ -3,6 +3,10 @@ type Query {
     products: [Product]
 }
 
+type Mutation {
+    authLogin(email: String!, password: String!): LoginPayload
+}
+
 "Category object"
 type Category {
     _id: ID!
@@ -26,4 +30,10 @@ type Product {
     category: ID
     updatedAt: String
     createdAt: String
+}
+
+type LoginPayload {
+    token: String
+    userId: String
+    error: String
 }
