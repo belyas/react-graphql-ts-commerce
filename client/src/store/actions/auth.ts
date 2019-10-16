@@ -2,15 +2,22 @@ import { Dispatch } from 'redux';
 
 import axios from '../../axios';
 import { setAuthToken } from '../../utils/api';
-import * as actionTypes from '../actions/actionTypes';
-import * as api from '../../apis/auth';
-import { IAuthRequest } from '../../types';
+import * as actionTypes from './actionTypes';
 
 export const authStart = () => ({
   type: actionTypes.AUTH_START,
 });
 
-export const authSuccess = (token: string, userId: string | null) => ({
+export interface IAuthSuccessPayload {
+  type: typeof actionTypes.AUTH_SUCCESS;
+  token: string;
+  userId: string;
+}
+
+export const authSuccess = (
+  token: string,
+  userId: string
+): IAuthSuccessPayload => ({
   type: actionTypes.AUTH_SUCCESS,
   token,
   userId,
@@ -22,52 +29,29 @@ export const authFailure = (error: string) => ({
 });
 
 export const authLoggedout = () => {
-  localStorage.removeItem('token');
-  localStorage.removeItem('userId');
+  localStorage.removeItem('user:token');
+  localStorage.removeItem('user:userId');
 
   return {
     type: actionTypes.AUTH_LOGOUT,
   };
 };
 
-export const auth = (email: string, password: string) => {
-  return async (dispatch: Dispatch) => {
-    dispatch(authStart());
-
-    try {
-      const data = await api.loginAuth({ email, password });
-
-      if (!data) {
-        return dispatch(authFailure('Invalid email or password'));
-      }
-
-      const { token, userId } = data;
-
-      dispatch(authSuccess(token, userId));
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('userId', userId);
-    } catch (err) {
-      dispatch(authFailure('Invalid email or password'));
-    }
-  };
-};
-
 export const authCheckState = () => {
   return async (dispatch: Dispatch) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('user:token');
 
     if (!token) {
       dispatch(authLoggedout());
     } else {
-      const userId = localStorage.getItem('userId');
+      const userId = localStorage.getItem('user:userId');
 
       // check server response
       try {
         setAuthToken(axios);
         await axios.post('/auth/checkstatus');
 
-        dispatch(authSuccess(token, userId));
+        if (userId) dispatch(authSuccess(token, userId));
       } catch (err) {
         dispatch(authLoggedout());
       }
