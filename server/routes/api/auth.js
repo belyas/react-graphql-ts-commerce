@@ -6,6 +6,6 @@ import { isAuthenticatedApi } from '../../middlewares';
 const router = express.Router();
 
 router.post('/checkstatus', isAuthenticatedApi, authController.checkUserStatus);
-router.post('/signup', authController.signup);
+// router.post('/signup', authController.signup);
 
 export default router;
