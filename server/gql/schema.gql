@@ -5,6 +5,12 @@ type Query {
 
 type Mutation {
     authLogin(email: String!, password: String!): LoginPayload
+    authSignup(
+        firstname: String!
+        lastname: String!
+        email: String!
+        password: String!
+    ): SignupPayload
 }
 
 "Category object"
@@ -36,4 +42,9 @@ type LoginPayload {
     token: String
     userId: String
     error: String
+}
+
+type SignupPayload {
+    error: String
+    success: Boolean!
 }
