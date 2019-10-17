@@ -35,3 +35,22 @@ export const AUTH_LOGIN = gql`
     }
   }
 `;
+
+export const AUTH_SIGNUP = gql`
+  mutation AuthSignup(
+    $firstname: String!
+    $lastname: String!
+    $email: String!
+    $password: String!
+  ) {
+    authSignup(
+      firstname: $firstname
+      lastname: $lastname
+      email: $email
+      password: $password
+    ) {
+      error
+      success
+    }
+  }
+`;
