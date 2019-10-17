@@ -9,7 +9,7 @@ import {
 } from '../../utils/validateAuth';
 import AuthComponent from '../../components/Auth/Auth';
 import { IAuthCommon, IAuthErrors } from '../../types';
-import { AUTH_LOGIN } from '../../gql/queries';
+import { AUTH_LOGIN, AUTH_SIGNUP } from '../../gql/queries';
 import gqlClient from '../../gql/client';
 import { authSuccess, IAuthSuccessPayload } from '../../store/actions';
 
@@ -66,12 +66,13 @@ class Auth extends Component<IAuthProps, IAuthState> {
     } = data;
 
     if (token && userId && error === null) {
+      const { authSuccess, history } = this.props;
       localStorage.setItem('user:token', token);
       localStorage.setItem('user:userId', userId);
 
-      this.props.authSuccess(token, userId);
+      authSuccess(token, userId);
 
-      this.props.history.push('/');
+      history.push('/');
     } else {
       this.setState({ error });
     }
@@ -103,18 +104,43 @@ class Auth extends Component<IAuthProps, IAuthState> {
     });
   };
 
-  onSignupSubmitHanlder = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const { email, password, firstname, lastname, errors } = this.state;
+  _hasErrors = (): boolean => {
+    const { email, password, firstname, lastname } = this.state;
 
-    if (errors && Object.keys(errors).length > 0) {
+    return (
+      email === '' && password === '' && firstname === '' && lastname === ''
+    );
+  };
+
+  onSignupSubmitHanlder = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const { email, password, firstname, lastname } = this.state;
+
+    if (this._hasErrors()) {
       this.setState({
         error: 'Please correct all errors before you continue!',
       });
     } else {
       // Sign up call
-      // this.props.onSignupAuth(firstname, lastname, email, password);
-      this.setState({ error: '' });
+      const { data } = await gqlClient.mutate({
+        mutation: AUTH_SIGNUP,
+        variables: {
+          firstname,
+          lastname,
+          email,
+          password,
+        },
+      });
+      const {
+        authSignup: { error, success },
+      } = data;
+
+      if (success) {
+        // back to Login view
+        this.setState({ error: '', isLogin: true });
+      } else {
+        this.setState({ error });
+      }
     }
   };
 
