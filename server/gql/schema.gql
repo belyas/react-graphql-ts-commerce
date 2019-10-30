@@ -2,6 +2,7 @@ type Query {
     categories: [Category]
     products: [Product]
     categoryProducts(category_id: String!): [Product]
+    product(product_id: String!): Product
 }
 
 type Mutation {
