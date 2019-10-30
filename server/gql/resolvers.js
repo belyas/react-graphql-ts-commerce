@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import validator from 'validator';
+import mongoose from 'mongoose';
 
 import CategoryModel from '../models/category';
 import ProductModel from '../models/product';
 import UserModel from '../models/user';
-import { productsPresenter } from '../utils/presenter';
+import { productsPresenter, productPresenter } from '../utils/presenter';
 
 const Query = {
     categories: async () => {
@@ -23,12 +24,24 @@ const Query = {
     },
     categoryProducts: async (_, { category_id }) => {
         try {
-            const products = await ProductModel.find({
-                category: category_id,
-            }).sort([['createdAt', -1]]);
+            const category = mongoose.Types.ObjectId(category_id);
+            const products = await ProductModel.find({ category }).sort([
+                ['createdAt', -1],
+            ]);
             const updatedProducts = productsPresenter(products);
 
             return updatedProducts;
+        } catch (err) {
+            return { error: err.message };
+        }
+    },
+    product: async (_, { product_id }) => {
+        try {
+            const _id = mongoose.Types.ObjectId(product_id);
+            const product = await ProductModel.findById(_id);
+            const updatedProduct = productPresenter(product);
+
+            return updatedProduct;
         } catch (err) {
             return { error: err.message };
         }
