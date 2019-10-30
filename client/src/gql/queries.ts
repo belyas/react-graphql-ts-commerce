@@ -26,6 +26,20 @@ export const GET_PRODUCTS = gql`
   }
 `;
 
+export const GET_PRODUCT = gql`
+  query ProductQuery($product_id: String!) {
+    product(product_id: $product_id) {
+      _id
+      name
+      image
+      category
+      price
+      description
+      quantity
+    }
+  }
+`;
+
 export const AUTH_LOGIN = gql`
   mutation AuthLoginMutation($email: String!, $password: String!) {
     authLogin(email: $email, password: $password) {
