@@ -1,58 +1,57 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Query, QueryResult } from 'react-apollo';
 import { connect } from 'react-redux';
-import { bindActionCreators, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
+import { Spinner } from 'reactstrap';
 
 import ProductDetailComponent from '../../../components/Product/ProductDetail/ProductDetail';
-import { getProduct } from '../../../store/actions';
 import { ICartItem } from '../../../types';
+import { GET_PRODUCT } from '../../../gql/queries';
+import { addToCart } from '../../../store/actions';
 
 type Match = { params: { product_id: string } };
-type Props = {
+interface IProps {
   match: Match;
-  product: ICartItem;
-  getProduct: (product_id: string) => void;
-  loading: boolean;
-};
+  setCartItem: (product: ICartItem) => void;
+}
 
-const ProductDetail: React.FunctionComponent<Props> = ({
-  match,
-  getProduct,
-  product = {},
-  loading,
-}) => {
-  const product_id = match.params.product_id;
-  const _props = { loading, product };
-  const isProductEmpty = Object.keys(product).length === 0;
-
-  useEffect(() => {
-    if (isProductEmpty) {
-      getProduct(product_id);
-    }
-    // eslint-disable-next-line
-  }, [product_id]);
-
-  return <ProductDetailComponent {..._props} />;
-};
-
-const mapStateToProps = (
-  {
-    product,
-  }: {
-    product: {
-      single_product: ICartItem[];
-      loading: boolean;
-    };
+const ProductDetail = ({
+  match: {
+    params: { product_id },
   },
-  { match }: { match: { params: { product_id: any } } }
-) => ({
-  product: product.single_product[match.params.product_id],
-  loading: product.loading,
-});
+  setCartItem,
+}: IProps) => {
+  return (
+    <Query query={GET_PRODUCT} variables={{ product_id }}>
+      {({ data, loading, error }: QueryResult) => {
+        if (error) {
+          throw new Error(error.message);
+        }
 
-const mapDispatchToProps = (dispatch: Dispatch) =>
-  bindActionCreators({ getProduct }, dispatch);
+        if (loading) {
+          return <Spinner color="primary" />;
+        }
+
+        const { product } = data;
+
+        return (
+          <ProductDetailComponent product={product} setCartItem={setCartItem} />
+        );
+      }}
+    </Query>
+  );
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => {
+  return {
+    setCartItem: (product: ICartItem): void => {
+      product.qty = 1; // hack qty for now
+      dispatch(addToCart(product));
+    },
+  };
+};
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(ProductDetail);
