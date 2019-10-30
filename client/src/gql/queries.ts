@@ -54,3 +54,17 @@ export const AUTH_SIGNUP = gql`
     }
   }
 `;
+
+export const GET_CATEGORY_PRODUCTS = gql`
+  query getCategoryProductsQuery($category_id: String!) {
+    categoryProducts(category_id: $category_id) {
+      name
+      image
+      _id
+      price
+      qty
+      quantity
+      description
+    }
+  }
+`;
