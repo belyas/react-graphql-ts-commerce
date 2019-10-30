@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React from 'react';
+import { Query, QueryResult } from 'react-apollo';
 
 import CategoryProductsComponent from '../../../components/Product/CategoryProducts/CategoryProducts';
-import { getCategoryProducts } from '../../../store/actions';
 import { ICartItem } from '../../../types';
+import { GET_CATEGORY_PRODUCTS } from '../../../gql/queries';
 
 type Match = { params: { category_id: string } };
 type Props = {
@@ -15,52 +14,28 @@ type Props = {
 };
 
 const CategoryProducts: React.FunctionComponent<Props> = ({
-  match,
-  products = [],
-  getProducts,
-  loading,
+  match: {
+    params: { category_id },
+  },
   ...props
 }) => {
-  const { category_id } = match.params;
-  const childProps = {
-    ...props,
-    products,
-    loading,
-  };
+  return (
+    <Query query={GET_CATEGORY_PRODUCTS} variables={{ category_id }}>
+      {({ data, error, loading }: QueryResult) => {
+        if (error) {
+          throw new Error(error.message);
+        }
 
-  useEffect(() => {
-    if (!products.length) {
-      getProducts(category_id);
-    }
-    // eslint-disable-next-line
-  }, [category_id]);
-
-  return <CategoryProductsComponent {...childProps} />;
+        return (
+          <CategoryProductsComponent
+            loading={loading}
+            products={data.categoryProducts || []}
+            {...props}
+          />
+        );
+      }}
+    </Query>
+  );
 };
 
-const mapStateToProps = (
-  {
-    product,
-  }: {
-    product: {
-      category_products: ICartItem[][];
-      loading: boolean;
-    };
-  },
-  { match: { params } }: { match: { params: { category_id: any } } }
-) => {
-  return {
-    products: product.category_products[params.category_id],
-    loading: product.loading,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  getProducts: (category_id: string) =>
-    dispatch(getCategoryProducts(category_id)),
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CategoryProducts);
+export default CategoryProducts;
