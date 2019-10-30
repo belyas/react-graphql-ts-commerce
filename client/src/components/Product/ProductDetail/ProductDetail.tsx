@@ -1,20 +1,17 @@
 import React from 'react';
 import { Button } from 'reactstrap';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
 
-import { addToCart } from '../../../store/actions';
-import withSpinner from '../../../hoc/WithSpinner/WithSpinner';
-import { IProductDetailProps, ICartItem } from '../../../types';
+import { ICartItem } from '../../../types';
 
-const ProductDetail = ({
-  product,
-  loading,
-  setCartItem,
-}: IProductDetailProps) => {
+interface IProductDetailProps {
+  product: ICartItem;
+  setCartItem: (product: ICartItem) => void;
+}
+
+const ProductDetail = ({ product, setCartItem }: IProductDetailProps) => {
   return (
     <>
-      {!loading && product && (
+      {product && (
         <div id="product-details" className="col-md-12">
           <div className="col-md-6 col-sm-12">
             <img
@@ -41,16 +38,4 @@ const ProductDetail = ({
   );
 };
 
-const mapDispatchToProps = (dispatch: Dispatch) => {
-  return {
-    setCartItem: (product: ICartItem) => {
-      product.qty = 1; // hack qty for now
-      dispatch(addToCart(product));
-    },
-  };
-};
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(withSpinner(ProductDetail));
+export default ProductDetail;
