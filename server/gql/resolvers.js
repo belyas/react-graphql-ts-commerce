@@ -21,6 +21,18 @@ const Query = {
 
         return updatedProducts;
     },
+    categoryProducts: async (_, { category_id }) => {
+        try {
+            const products = await ProductModel.find({
+                category: category_id,
+            }).sort([['createdAt', -1]]);
+            const updatedProducts = productsPresenter(products);
+
+            return updatedProducts;
+        } catch (err) {
+            return { error: err.message };
+        }
+    },
 };
 
 const Mutation = {
