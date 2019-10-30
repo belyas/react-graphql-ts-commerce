@@ -2,9 +2,13 @@ import React from 'react';
 
 import Product from '../ProductCard/ProductCard';
 import withSpinner from '../../../hoc/WithSpinner/WithSpinner';
-import { IProducts } from '../../../types';
+import { ICartItem } from '../../../types';
 
 import classes from '../Product.module.css';
+
+interface IProducts {
+  products: ICartItem[];
+}
 
 const CategoryProducts = ({ products = [] }: IProducts) => {
   return (
