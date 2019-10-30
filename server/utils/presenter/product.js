@@ -15,6 +15,7 @@ const productPresenter = product => {
     updatedProduct.price = product.price;
     updatedProduct._id = product._id;
     updatedProduct.quantity = product.quantity;
+    updatedProduct.qty = product.quantity;
     updatedProduct.category = product.category;
 
     return updatedProduct;
