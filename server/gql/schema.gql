@@ -1,6 +1,7 @@
 type Query {
     categories: [Category]
     products: [Product]
+    categoryProducts(category_id: String!): [Product]
 }
 
 type Mutation {
@@ -30,6 +31,7 @@ type Product {
     image: String
     quantity: Int
     price: Int
+    qty: Int
     """
     Category ID
     """
