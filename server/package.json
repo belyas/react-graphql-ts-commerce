@@ -16,7 +16,7 @@
     },
     "license": "MIT",
     "dependencies": {
-        "apollo-server-express": "^2.9.0",
+        "apollo-server-express": "^2.14.2",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.18.3",
         "connect-flash": "^0.1.1",
